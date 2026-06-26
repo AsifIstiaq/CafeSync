@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 
 export default function AdminMenu() {
   const [items, setItems] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -12,6 +14,7 @@ export default function AdminMenu() {
     image_url: "",
   });
 
+  // AUTH CHECK
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
 
@@ -20,6 +23,7 @@ export default function AdminMenu() {
     }
   }, []);
 
+  // FETCH ITEMS
   const fetchItems = async () => {
     const res = await fetch("http://localhost:4000/api/menu/items");
     const data = await res.json();
@@ -30,19 +34,34 @@ export default function AdminMenu() {
     fetchItems();
   }, []);
 
+  // HANDLE INPUT CHANGE
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const addItem = async (e) => {
+  // SUBMIT (CREATE / UPDATE)
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await fetch("http://localhost:4000/api/menu/items", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+    if (editingId) {
+      // UPDATE
+      await fetch(`http://localhost:4000/api/menu/items/${editingId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
 
+      setEditingId(null);
+    } else {
+      // CREATE
+      await fetch("http://localhost:4000/api/menu/items", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+    }
+
+    // RESET FORM
     setForm({
       name: "",
       description: "",
@@ -54,12 +73,38 @@ export default function AdminMenu() {
     fetchItems();
   };
 
+  // START EDIT
+  const startEdit = (item) => {
+    setEditingId(item[0]);
+
+    setForm({
+      name: item[1] || "",
+      description: item[2] || "",
+      price: item[3] || "",
+      category: item[4] || "",
+      image_url: item[6] || "",
+    });
+  };
+
+  // DELETE
   const deleteItem = async (id) => {
     await fetch(`http://localhost:4000/api/menu/items/${id}`, {
       method: "DELETE",
     });
 
     fetchItems();
+  };
+
+  // CANCEL EDIT
+  const cancelEdit = () => {
+    setEditingId(null);
+    setForm({
+      name: "",
+      description: "",
+      price: "",
+      category: "",
+      image_url: "",
+    });
   };
 
   return (
@@ -69,41 +114,62 @@ export default function AdminMenu() {
       </h1>
 
       {/* FORM */}
-      <form onSubmit={addItem} className="grid gap-2 mb-6">
+      <form onSubmit={handleSubmit} className="grid gap-2 mb-6">
         <input
           name="name"
+          value={form.name}
           placeholder="Name"
           onChange={handleChange}
           className="border p-2"
         />
+
         <input
           name="description"
+          value={form.description}
           placeholder="Description"
           onChange={handleChange}
           className="border p-2"
         />
+
         <input
           name="price"
+          value={form.price}
           placeholder="Price"
           onChange={handleChange}
           className="border p-2"
         />
+
         <input
           name="category"
+          value={form.category}
           placeholder="Category"
           onChange={handleChange}
           className="border p-2"
         />
+
         <input
           name="image_url"
+          value={form.image_url}
           placeholder="Image URL"
           onChange={handleChange}
           className="border p-2"
         />
 
-        <button className="bg-orange-500 text-white p-2 rounded">
-          Add Item
-        </button>
+        <div className="flex gap-2">
+          <button className="bg-orange-500 text-white p-2 rounded">
+            {editingId ? "Update Item" : "Add Item"}
+          </button>
+
+          {editingId && (
+            <button
+              type="button"
+              onClick={cancelEdit}
+              className="text-gray-600"
+            >
+              Cancel
+            </button>
+          )}
+        </div>
       </form>
 
       {/* LIST */}
@@ -111,7 +177,7 @@ export default function AdminMenu() {
         {items.map((item) => (
           <div
             key={item[0]}
-            className="border p-3 rounded flex justify-between"
+            className="border p-3 rounded flex justify-between items-center"
           >
             <div>
               <h2 className="font-bold">{item[1]}</h2>
@@ -119,12 +185,21 @@ export default function AdminMenu() {
               <p className="text-sm text-gray-500">{item[4]}</p>
             </div>
 
-            <button
-              onClick={() => deleteItem(item[0])}
-              className="bg-red-500 text-white px-3 py-1 rounded"
-            >
-              Delete
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => startEdit(item)}
+                className="bg-blue-500 text-white px-3 py-1 rounded"
+              >
+                Edit
+              </button>
+
+              <button
+                onClick={() => deleteItem(item[0])}
+                className="bg-red-500 text-white px-3 py-1 rounded"
+              >
+                Delete
+              </button>
+            </div>
           </div>
         ))}
       </div>
