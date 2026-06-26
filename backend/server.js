@@ -3,6 +3,7 @@ const oracledb = require("oracledb");
 const cors = require("cors");
 
 const authRoutes = require("./routes/authRoutes");
+const menuRoutes = require("./routes/menuRoutes");
 
 const app = express();
 app.use(cors());
@@ -51,6 +52,7 @@ app.get("/test-db", async (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/menu", menuRoutes);
 
 app.listen(4000, () => {
   console.log("Backend running on http://localhost:4000");
