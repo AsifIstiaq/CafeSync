@@ -34,11 +34,17 @@ async function addItem(req, res) {
 
     conn = await getConnection();
 
+    const itemIdResult = await conn.execute(
+      `SELECT NVL(MAX(item_id),0)+1 FROM menu_item`,
+    );
+
+    const nextItemId = itemIdResult.rows[0][0];
+
     await conn.execute(
       `INSERT INTO menu_item
-       (name, description, price, category, image_url)
-       VALUES (:name, :description, :price, :category, :image_url)`,
-      { name, description, price, category, image_url },
+       (item_id, name, description, price, category, image_url)
+       VALUES (:item_id, :name, :description, :price, :category, :image_url)`,
+      { item_id: nextItemId, name, description, price, category, image_url },
       { autoCommit: true },
     );
 

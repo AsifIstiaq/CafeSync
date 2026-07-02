@@ -43,7 +43,23 @@ export default function LoginPage() {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
 
-        router.push("/dashboard");
+        switch (data.user.role.toLowerCase()) {
+          case "admin":
+            router.push("/admin/menu");
+            break;
+
+          case "staff":
+            router.push("/staff/dashboard");
+            break;
+
+          case "customer":
+            router.push("/menu");
+            break;
+
+          default:
+            setMessage("Unknown user role");
+            break;
+        }
       } else {
         setMessage(data.message);
       }

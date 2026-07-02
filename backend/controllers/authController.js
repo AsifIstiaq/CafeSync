@@ -32,7 +32,6 @@ async function register(req, res) {
 
     const hash = await bcrypt.hash(password, 10);
 
-    // Get the next user_id
     const userIdResult = await conn.execute(`SELECT MAX(user_id) FROM users`);
     const nextUserId = (userIdResult.rows[0]?.[0] || 0) + 1;
 
