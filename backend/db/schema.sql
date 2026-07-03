@@ -29,7 +29,7 @@ CREATE TABLE menu_item (
 
 -- CAFE TABLES
 CREATE TABLE cafe_table (
-  table_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  table_id NUMBER PRIMARY KEY,
   table_number NUMBER,
   capacity NUMBER,
   status VARCHAR2(20) DEFAULT 'available',
@@ -38,7 +38,7 @@ CREATE TABLE cafe_table (
 
 -- ORDERS
 CREATE TABLE order_table (
-  order_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  order_id NUMBER PRIMARY KEY,
   user_id NUMBER,
   table_id NUMBER,
   coupon_id NUMBER,
@@ -51,7 +51,7 @@ CREATE TABLE order_table (
 
 -- ORDER ITEMS
 CREATE TABLE order_item (
-  order_item_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  order_item_id NUMBER PRIMARY KEY,
   order_id NUMBER,
   item_id NUMBER,
   quantity NUMBER,
@@ -62,7 +62,7 @@ CREATE TABLE order_item (
 
 -- RESERVATION
 CREATE TABLE reservation (
-  reservation_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  reservation_id NUMBER PRIMARY KEY,
   user_id NUMBER,
   table_id NUMBER,
   reserved_at TIMESTAMP,
@@ -73,7 +73,7 @@ CREATE TABLE reservation (
 
 -- PAYMENT
 CREATE TABLE payment (
-  payment_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  payment_id NUMBER PRIMARY KEY,
   order_id NUMBER,
   method VARCHAR2(30),
   amount NUMBER(10,2),
@@ -84,7 +84,7 @@ CREATE TABLE payment (
 
 -- SUBSCRIPTION
 CREATE TABLE subscription (
-  sub_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  sub_id NUMBER PRIMARY KEY,
   user_id NUMBER,
   plan_type VARCHAR2(50),
   start_date DATE,
@@ -96,7 +96,7 @@ CREATE TABLE subscription (
 
 -- INVENTORY
 CREATE TABLE inventory (
-  inventory_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  inventory_id NUMBER PRIMARY KEY,
   ingredient_name VARCHAR2(100),
   quantity NUMBER,
   unit VARCHAR2(20),
@@ -106,7 +106,7 @@ CREATE TABLE inventory (
 
 -- REVIEW
 CREATE TABLE review (
-  review_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  review_id NUMBER PRIMARY KEY,
   user_id NUMBER,
   item_id NUMBER,
   rating NUMBER,
@@ -116,7 +116,7 @@ CREATE TABLE review (
 
 -- COUPON
 CREATE TABLE coupon (
-  coupon_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  coupon_id NUMBER PRIMARY KEY,
   code VARCHAR2(50) UNIQUE,
   discount_type VARCHAR2(20),
   value NUMBER(10,2),
@@ -127,7 +127,7 @@ CREATE TABLE coupon (
 
 -- MEMBERSHIP CARD
 CREATE TABLE membership_card (
-  card_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  card_id NUMBER PRIMARY KEY,
   user_id NUMBER,
   tier VARCHAR2(20),
   points NUMBER DEFAULT 0,
@@ -138,7 +138,7 @@ CREATE TABLE membership_card (
 
 -- NOTIFICATION
 CREATE TABLE notification (
-  notif_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  notif_id NUMBER PRIMARY KEY,
   user_id NUMBER,
   type VARCHAR2(50),
   message VARCHAR2(255),
@@ -148,7 +148,7 @@ CREATE TABLE notification (
 
 -- QUEUE TOKEN
 CREATE TABLE queue_token (
-  token_id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  token_id NUMBER PRIMARY KEY,
   order_id NUMBER,
   token_number NUMBER,
   status VARCHAR2(20),
