@@ -63,4 +63,47 @@ async function placeOrder(req, res) {
   }
 }
 
-module.exports = { placeOrder };
+async function getUserOrders(req, res) {
+  let conn;
+
+  try {
+    const { user_id } = req.params;
+
+    conn = await getConnection();
+
+    const result = await conn.execute(
+      `SELECT 
+          o.order_id,
+          o.status,
+          o.total_amount,
+          o.payment_status,
+          q.token_number,
+          m.name,
+          oi.quantity
+       FROM order_table o
+       LEFT JOIN queue_token q 
+         ON o.order_id = q.order_id
+       LEFT JOIN order_item oi
+         ON o.order_id = oi.order_id
+       LEFT JOIN menu_item m
+         ON oi.item_id = m.item_id
+       WHERE o.user_id = :user_id
+       ORDER BY o.order_id DESC`,
+      { user_id },
+    );
+
+    res.json({
+      success: true,
+      data: result.rows,
+    });
+  } catch (err) {
+    res.json({
+      success: false,
+      message: err.message,
+    });
+  } finally {
+    if (conn) await conn.close();
+  }
+}
+
+module.exports = { getUserOrders, placeOrder };

@@ -57,7 +57,8 @@ CREATE TABLE order_item (
   quantity NUMBER,
   unit_price NUMBER(10,2),
   notes VARCHAR2(255),
-  CONSTRAINT fk_order FOREIGN KEY (order_id) REFERENCES order_table(order_id)
+  CONSTRAINT fk_order FOREIGN KEY (order_id) REFERENCES order_table(order_id),
+  CONSTRAINT fk_item FOREIGN KEY (item_id) REFERENCES menu_item(item_id)
 );
 
 -- RESERVATION

@@ -130,11 +130,13 @@ export default function AdminDashboard() {
             <thead className="bg-gray-100 text-gray-700">
               <tr>
                 <th className="p-3 text-left">Order ID</th>
+                <th className="p-3 text-left">Item</th>
                 <th className="p-3 text-left">User</th>
                 <th className="p-3 text-left">Status</th>
                 <th className="p-3 text-left">Payment</th>
                 <th className="p-3 text-left">Total</th>
                 <th className="p-3 text-left">Actions</th>
+                <th className="p-3 text-left">Notes</th>
               </tr>
             </thead>
 
@@ -142,11 +144,19 @@ export default function AdminDashboard() {
               {orders.map((o) => (
                 <tr key={o[0]} className="border-t hover:bg-gray-50 transition">
                   <td className="p-3 font-medium">#{o[0]}</td>
+
+                  <td className="p-3 font-medium">
+                    {o[5] ? `${o[5]}` : "No Item"}
+                  </td>
+
                   <td className="p-3">{o[1]}</td>
+
                   <td className="p-3">
                     <StatusBadge status={o[2]} />
                   </td>
+
                   <td className="p-3">{o[4]}</td>
+
                   <td className="p-3 font-semibold">{o[3]} BDT</td>
 
                   <td className="p-3">
@@ -180,6 +190,8 @@ export default function AdminDashboard() {
                       </button>
                     </div>
                   </td>
+
+                  <td className="p-3 font-medium">{o[7] || "N/A"}</td>
                 </tr>
               ))}
             </tbody>

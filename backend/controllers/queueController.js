@@ -8,9 +8,27 @@ async function getAllOrders(req, res) {
     conn = await getConnection();
 
     const result = await conn.execute(
-      `SELECT order_id, user_id, status, total_amount, payment_status, created_at
-       FROM order_table
-       ORDER BY order_id DESC`,
+      `SELECT 
+      o.order_id,
+      o.user_id,
+      o.status,
+      o.total_amount,
+      o.payment_status,
+      LISTAGG(m.name || ' x' || oi.quantity, ', ')
+        WITHIN GROUP (ORDER BY m.name) AS items,
+      MAX(oi.notes) AS notes
+   FROM order_table o
+   LEFT JOIN order_item oi
+     ON o.order_id = oi.order_id
+   LEFT JOIN menu_item m
+     ON oi.item_id = m.item_id
+   GROUP BY 
+      o.order_id,
+      o.user_id,
+      o.status,
+      o.total_amount,
+      o.payment_status
+   ORDER BY o.order_id DESC`,
     );
 
     res.json({
