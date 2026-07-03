@@ -9,26 +9,23 @@ async function getAllOrders(req, res) {
 
     const result = await conn.execute(
       `SELECT 
-      o.order_id,
-      o.user_id,
-      o.status,
-      o.total_amount,
-      o.payment_status,
-      LISTAGG(m.name || ' x' || oi.quantity, ', ')
-        WITHIN GROUP (ORDER BY m.name) AS items,
-      MAX(oi.notes) AS notes
-   FROM order_table o
-   LEFT JOIN order_item oi
-     ON o.order_id = oi.order_id
-   LEFT JOIN menu_item m
-     ON oi.item_id = m.item_id
-   GROUP BY 
-      o.order_id,
-      o.user_id,
-      o.status,
-      o.total_amount,
-      o.payment_status
-   ORDER BY o.order_id DESC`,
+    o.order_id,
+    o.user_id,
+    o.status,
+    o.total_amount,
+    o.payment_status,
+    m.name,
+    oi.quantity,
+    oi.notes,
+    q.token_number
+FROM order_table o
+LEFT JOIN order_item oi
+  ON o.order_id = oi.order_id
+LEFT JOIN menu_item m
+  ON oi.item_id = m.item_id
+LEFT JOIN queue_token q
+  ON o.order_id = q.order_id
+ORDER BY o.order_id DESC`,
     );
 
     res.json({
@@ -139,8 +136,36 @@ async function updateStatus(req, res) {
   }
 }
 
+// UPDATE PAYMENT STATUS
+async function updatePaymentStatus(req, res) {
+  let conn;
+
+  try {
+    const { order_id, payment_status } = req.body;
+
+    conn = await getConnection();
+
+    conn = await getConnection();
+
+    await conn.execute(
+      `UPDATE order_table 
+       SET payment_status = :payment_status
+       WHERE order_id = :order_id`,
+      { order_id, payment_status },
+      { autoCommit: true },
+    );
+
+    res.json({ success: true });
+  } catch (err) {
+    res.json({ success: false, message: err.message });
+  } finally {
+    if (conn) await conn.close();
+  }
+}
+
 module.exports = {
   getAllOrders,
   generateToken,
   updateStatus,
+  updatePaymentStatus,
 };

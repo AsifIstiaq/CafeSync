@@ -18,6 +18,7 @@ export default function AdminDashboard() {
     if (data.success) setOrders(data.data);
   }
 
+  // TOKEN GENERATE
   async function generateToken(order_id) {
     const res = await fetch(`${API}/generate-token`, {
       method: "POST",
@@ -33,11 +34,23 @@ export default function AdminDashboard() {
     }
   }
 
+  // STATUS UPDATE
   async function updateStatus(order_id, status) {
     await fetch(`${API}/status`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ order_id, status }),
+    });
+
+    fetchOrders();
+  }
+
+  // PAYMENT UPDATE
+  async function updatePayment(order_id, status) {
+    await fetch(`${API}/payment-status`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ order_id, payment_status: status }),
     });
 
     fetchOrders();
@@ -52,11 +65,7 @@ export default function AdminDashboard() {
     };
 
     return (
-      <span
-        className={`px-2 py-1 rounded-full text-xs font-medium ${
-          map[status] || "bg-gray-100 text-gray-600"
-        }`}
-      >
+      <span className={`px-2 py-1 rounded-full text-xs ${map[status]}`}>
         {status}
       </span>
     );
@@ -66,87 +75,34 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
       {/* HEADER */}
       <div className="sticky top-0 bg-gray-50 pb-4 z-10">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-          Order Queue Management
-        </h1>
-        <p className="text-sm text-gray-500">
-          Manage orders, tokens & kitchen status
-        </p>
+        <h1 className="text-2xl font-bold">Order Queue Management</h1>
       </div>
 
-      {/* MOBILE CARDS */}
-      <div className="grid grid-cols-1 gap-4 md:hidden">
-        {orders.map((o) => (
-          <div key={o[0]} className="bg-white rounded-xl shadow-sm border p-4">
-            <div className="flex justify-between items-center">
-              <p className="font-semibold">Order #{o[0]}</p>
-              <StatusBadge status={o[2]} />
-            </div>
+      {/* TABLE */}
+      <div className="bg-white border rounded-xl overflow-hidden mt-4">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="p-3 text-left">Order</th>
+              <th className="p-3 text-left">Item</th>
+              <th className="p-3 text-left">User</th>
+              <th className="p-3 text-left">Status</th>
+              <th className="p-3 text-left">Payment</th>
+              <th className="p-3 text-left">Token</th>
+              <th className="p-3 text-left">Actions</th>
+            </tr>
+          </thead>
 
-            <div className="mt-2 text-sm text-gray-600 space-y-1">
-              <p>User: {o[1]}</p>
-              <p>Total: {o[3]} BDT</p>
-              <p>Payment: {o[4]}</p>
-            </div>
+          <tbody>
+            {orders.map((o) => {
+              const tokenExists = o[8] !== null;
 
-            {/* ACTIONS */}
-            <div className="mt-4 grid grid-cols-2 gap-2">
-              <button
-                onClick={() => generateToken(o[0])}
-                className="bg-blue-500 hover:bg-blue-600 text-white text-sm py-2 rounded-lg"
-              >
-                Token
-              </button>
+              return (
+                <tr key={o[0]} className="border-t">
+                  <td className="p-3">#{o[0]}</td>
 
-              <button
-                onClick={() => updateStatus(o[0], "preparing")}
-                className="bg-yellow-500 hover:bg-yellow-600 text-white text-sm py-2 rounded-lg"
-              >
-                Prep
-              </button>
-
-              <button
-                onClick={() => updateStatus(o[0], "ready")}
-                className="bg-green-500 hover:bg-green-600 text-white text-sm py-2 rounded-lg"
-              >
-                Ready
-              </button>
-
-              <button
-                onClick={() => updateStatus(o[0], "served")}
-                className="bg-gray-700 hover:bg-gray-800 text-white text-sm py-2 rounded-lg"
-              >
-                Served
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* DESKTOP TABLE */}
-      <div className="hidden md:block mt-4">
-        <div className="bg-white border rounded-xl shadow-sm overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-100 text-gray-700">
-              <tr>
-                <th className="p-3 text-left">Order ID</th>
-                <th className="p-3 text-left">Item</th>
-                <th className="p-3 text-left">User</th>
-                <th className="p-3 text-left">Status</th>
-                <th className="p-3 text-left">Payment</th>
-                <th className="p-3 text-left">Total</th>
-                <th className="p-3 text-left">Actions</th>
-                <th className="p-3 text-left">Notes</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {orders.map((o) => (
-                <tr key={o[0]} className="border-t hover:bg-gray-50 transition">
-                  <td className="p-3 font-medium">#{o[0]}</td>
-
-                  <td className="p-3 font-medium">
-                    {o[5] ? `${o[5]}` : "No Item"}
+                  <td className="p-3">
+                    {o[5]} × {o[6]}
                   </td>
 
                   <td className="p-3">{o[1]}</td>
@@ -155,48 +111,80 @@ export default function AdminDashboard() {
                     <StatusBadge status={o[2]} />
                   </td>
 
-                  <td className="p-3">{o[4]}</td>
-
-                  <td className="p-3 font-semibold">{o[3]} BDT</td>
-
+                  {/* PAYMENT STATUS */}
                   <td className="p-3">
-                    <div className="flex flex-wrap gap-2">
+                    <span
+                      className={`px-2 py-1 rounded text-xs ${
+                        o[4] === "paid"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
+                      }`}
+                    >
+                      {o[4]}
+                    </span>
+
+                    {/* CHANGE PAYMENT */}
+                    <div className="mt-1 flex gap-1">
                       <button
-                        onClick={() => generateToken(o[0])}
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded"
+                        onClick={() => updatePayment(o[0], "paid")}
+                        className="text-xs bg-green-500 text-white px-2 py-1 rounded"
                       >
-                        Token
+                        Mark Paid
                       </button>
 
                       <button
-                        onClick={() => updateStatus(o[0], "preparing")}
-                        className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded"
+                        onClick={() => updatePayment(o[0], "unpaid")}
+                        className="text-xs bg-red-500 text-white px-2 py-1 rounded"
                       >
-                        Prep
-                      </button>
-
-                      <button
-                        onClick={() => updateStatus(o[0], "ready")}
-                        className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded"
-                      >
-                        Ready
-                      </button>
-
-                      <button
-                        onClick={() => updateStatus(o[0], "served")}
-                        className="bg-gray-700 hover:bg-gray-800 text-white px-2 py-1 rounded"
-                      >
-                        Done
+                        Unpaid
                       </button>
                     </div>
                   </td>
 
-                  <td className="p-3 font-medium">{o[7] || "N/A"}</td>
+                  {/* TOKEN */}
+                  <td className="p-3">
+                    {o[8] ? (
+                      <span className="text-green-600 font-semibold">
+                        T{String(o[8]).padStart(3, "0")}
+                      </span>
+                    ) : (
+                      <button
+                        onClick={() => generateToken(o[0])}
+                        className="bg-blue-500 text-white px-2 py-1 rounded"
+                      >
+                        Generate
+                      </button>
+                    )}
+                  </td>
+
+                  {/* ACTIONS */}
+                  <td className="p-3 flex gap-2">
+                    <button
+                      onClick={() => updateStatus(o[0], "preparing")}
+                      className="bg-yellow-500 text-white px-2 py-1 rounded"
+                    >
+                      Prep
+                    </button>
+
+                    <button
+                      onClick={() => updateStatus(o[0], "ready")}
+                      className="bg-green-500 text-white px-2 py-1 rounded"
+                    >
+                      Ready
+                    </button>
+
+                    <button
+                      onClick={() => updateStatus(o[0], "served")}
+                      className="bg-gray-700 text-white px-2 py-1 rounded"
+                    >
+                      Done
+                    </button>
+                  </td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     </div>
   );
