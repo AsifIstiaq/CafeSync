@@ -6,6 +6,7 @@ const authRoutes = require("./routes/authRoutes");
 const menuRoutes = require("./routes/menuRoutes");
 const inventoryRoutes = require("./routes/inventoryRoutes");
 const orderRoutes = require("./routes/orderRoutes");
+const queueRoutes = require("./routes/queueRoutes");
 
 const app = express();
 app.use(cors());
@@ -57,6 +58,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/menu", menuRoutes);
 app.use("/api/inventory", inventoryRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/queue", queueRoutes);
 
 app.listen(4000, () => {
   console.log("Backend running on http://localhost:4000");
