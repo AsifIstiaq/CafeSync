@@ -13,6 +13,8 @@ const tableRoutes = require("./routes/tableRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
 const couponRoutes = require("./routes/couponRoutes");
+const subscriptionRoutes = require("./routes/subscriptionRoutes");
+const membershipRoutes = require("./routes/membershipRoutes");
 
 const app = express();
 app.use(cors());
@@ -70,6 +72,8 @@ app.use("/api/tables", tableRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/coupons", couponRoutes);
+app.use("/api/subscriptions", subscriptionRoutes);
+app.use("/api/membership", membershipRoutes);
 
 app.listen(4000, () => {
   console.log("Backend running on http://localhost:4000");
