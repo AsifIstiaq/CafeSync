@@ -167,3 +167,16 @@ CREATE TABLE queue_token (
   issued_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   served_at TIMESTAMP
 );
+
+CREATE TABLE feedbacks (
+    feedback_id NUMBER PRIMARY KEY,
+    user_id NUMBER NOT NULL,
+    subject VARCHAR2(100),
+    message VARCHAR2(500),
+    rating NUMBER CHECK(rating BETWEEN 1 AND 5),
+    status VARCHAR2(20) DEFAULT 'Pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_feedback_user
+    FOREIGN KEY(user_id)
+    REFERENCES users(user_id)
+);
