@@ -48,7 +48,7 @@ export default function MenuPage() {
     const data = await res.json();
 
     if (data.success) {
-      alert("Order placed successfully!");
+      alert(`Order placed successfully! Order ID: ${data.order_id}`);
       setCart([]);
     } else {
       alert(data.message);
@@ -96,17 +96,40 @@ export default function MenuPage() {
                   </p>
                 </div>
 
-                <button
-                  disabled={item[5] !== 1}
-                  onClick={() => addToCart(item)}
-                  className={`mt-4 w-full py-2 rounded-lg text-white text-sm font-medium transition ${
-                    item[5] === 1
-                      ? "bg-orange-500 hover:bg-orange-600"
-                      : "bg-gray-300 cursor-not-allowed"
-                  }`}
-                >
-                  Add to Cart
-                </button>
+                <div className="mt-4 space-y-2">
+                  {/* REVIEW BUTTON */}
+                  <button
+                    onClick={() =>
+                      (window.location.href = `/reviews/${item[0]}`)
+                    }
+                    className="
+    w-full
+    py-2
+    rounded-lg
+    border
+    border-orange-500
+    text-orange-500
+    text-sm
+    font-medium
+    hover:bg-orange-50
+    "
+                  >
+                    View Reviews ⭐
+                  </button>
+
+                  {/* CART BUTTON */}
+                  <button
+                    disabled={item[5] !== 1}
+                    onClick={() => addToCart(item)}
+                    className={`w-full py-2 rounded-lg text-white text-sm font-medium transition ${
+                      item[5] === 1
+                        ? "bg-orange-500 hover:bg-orange-600"
+                        : "bg-gray-300 cursor-not-allowed"
+                    }`}
+                  >
+                    Add to Cart
+                  </button>
+                </div>
               </div>
             ))}
           </div>

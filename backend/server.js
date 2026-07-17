@@ -11,6 +11,7 @@ const queueRoutes = require("./routes/queueRoutes");
 const reservationRoutes = require("./routes/reservationRoutes");
 const tableRoutes = require("./routes/tableRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
 
 const app = express();
 app.use(cors());
@@ -66,6 +67,7 @@ app.use("/api/queue", queueRoutes);
 app.use("/api/reservation", reservationRoutes);
 app.use("/api/tables", tableRoutes);
 app.use("/api/payment", paymentRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 app.listen(4000, () => {
   console.log("Backend running on http://localhost:4000");

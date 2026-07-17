@@ -112,12 +112,18 @@ CREATE TABLE inventory (
 
 -- REVIEW
 CREATE TABLE review (
-  review_id NUMBER PRIMARY KEY,
-  user_id NUMBER,
-  item_id NUMBER,
-  rating NUMBER,
-  comment VARCHAR2(255),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    review_id NUMBER PRIMARY KEY,
+    user_id NUMBER NOT NULL,
+    item_id NUMBER NOT NULL,
+    rating NUMBER CHECK(rating BETWEEN 1 AND 5),
+    review_comment VARCHAR2(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_review_user
+    FOREIGN KEY(user_id)
+    REFERENCES users(user_id),
+    CONSTRAINT fk_review_item
+    FOREIGN KEY(item_id)
+    REFERENCES menu_item(item_id)
 );
 
 -- COUPON
