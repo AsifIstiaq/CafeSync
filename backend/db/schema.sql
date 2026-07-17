@@ -32,7 +32,7 @@ CREATE TABLE cafe_table (
   table_id NUMBER PRIMARY KEY,
   table_number NUMBER,
   capacity NUMBER,
-  status VARCHAR2(20) DEFAULT 'available',
+  status VARCHAR2(20),
   location VARCHAR2(100)
 );
 
@@ -69,7 +69,9 @@ CREATE TABLE reservation (
   reserved_at TIMESTAMP,
   party_size NUMBER,
   status VARCHAR2(20),
-  CONSTRAINT fk_res_user FOREIGN KEY (user_id) REFERENCES users(user_id)
+  CONSTRAINT fk_res_user FOREIGN KEY (user_id) REFERENCES users(user_id),
+  CONSTRAINT fk_res_table FOREIGN KEY(table_id)
+  REFERENCES cafe_table(table_id)
 );
 
 -- PAYMENT
