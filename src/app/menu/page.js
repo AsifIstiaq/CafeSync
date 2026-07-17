@@ -5,12 +5,49 @@ import { useEffect, useState } from "react";
 export default function MenuPage() {
   const [items, setItems] = useState([]);
   const [cart, setCart] = useState([]);
+  const [coupon, setCoupon] = useState("");
+  const [couponId, setCouponId] = useState(null);
+  const [discount, setDiscount] = useState(0);
 
   useEffect(() => {
     fetch("http://localhost:4000/api/menu/items")
       .then((res) => res.json())
       .then((data) => setItems(data.data || []));
   }, []);
+
+  async function applyCoupon() {
+    const res = await fetch("http://localhost:4000/api/coupons/validate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        code: coupon,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      setCouponId(data.coupon_id);
+
+      let total = cart.reduce((sum, item) => sum + item[2] * item[3], 0);
+
+      let discountAmount = 0;
+
+      if (data.discount_type === "PERCENT") {
+        discountAmount = (total * data.value) / 100;
+      } else {
+        discountAmount = data.value;
+      }
+
+      setDiscount(discountAmount);
+
+      alert("Coupon applied");
+    } else {
+      alert(data.message);
+    }
+  }
 
   function addToCart(item) {
     const exists = cart.find((c) => c[0] === item[0]);
@@ -36,7 +73,8 @@ export default function MenuPage() {
     const payload = {
       user_id,
       items: cart,
-      total_amount,
+      total_amount: total_amount - discount,
+      coupon_id: couponId,
     };
 
     const res = await fetch("http://localhost:4000/api/orders/place", {
@@ -175,6 +213,36 @@ export default function MenuPage() {
                       BDT
                     </span>
                   </p>
+
+                  <div className="mt-4">
+                    <input
+                      className="border p-2 w-full"
+                      placeholder="Coupon Code"
+                      value={coupon}
+                      onChange={(e) => setCoupon(e.target.value)}
+                    />
+
+                    <button
+                      onClick={applyCoupon}
+                      className="
+mt-2
+bg-orange-500
+text-white
+px-3
+py-2
+rounded
+"
+                    >
+                      Apply Coupon
+                    </button>
+
+                    {discount > 0 && (
+                      <p className="text-green-600 mt-2">
+                        Discount:
+                        {discount} BDT
+                      </p>
+                    )}
+                  </div>
 
                   <button
                     onClick={placeOrder}
