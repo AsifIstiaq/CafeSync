@@ -19,6 +19,40 @@ export default function OrdersPage() {
     if (data.success) setOrders(data.data);
   }
 
+  async function cancelOrder(order) {
+    const reason = prompt("Enter cancellation reason:");
+
+    if (!reason) return;
+
+    const res = await fetch("http://localhost:4000/api/refunds/request", {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+      },
+
+      body: JSON.stringify({
+        user_id,
+
+        order_id: order[0],
+
+        amount: order[2],
+
+        reason,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      alert("Order cancelled. Refund request created.");
+
+      fetchOrders();
+    } else {
+      alert(data.message);
+    }
+  }
+
   function formatToken(num) {
     if (!num) return "Not Assigned";
     return "T" + String(num).padStart(3, "0");
@@ -27,9 +61,14 @@ export default function OrdersPage() {
   function statusBadge(status) {
     const map = {
       pending: "bg-yellow-100 text-yellow-700",
+
       preparing: "bg-blue-100 text-blue-700",
+
       ready: "bg-green-100 text-green-700",
+
       served: "bg-gray-200 text-gray-700",
+
+      cancelled: "bg-red-100 text-red-700",
     };
 
     return (
@@ -122,6 +161,25 @@ text-sm
                   </button>
                 )}
 
+                {(o[1].toLowerCase() === "pending" ||
+                  o[1].toLowerCase() === "received") && (
+                  <button
+                    onClick={() => cancelOrder(o)}
+                    className="
+mt-3
+w-full
+bg-red-500
+hover:bg-red-600
+text-white
+py-2
+rounded-lg
+text-sm
+"
+                  >
+                    Cancel Order
+                  </button>
+                )}
+
                 {/* BOTTOM ROW */}
                 <div className="flex justify-between items-center">
                   <div>
@@ -132,8 +190,9 @@ text-sm
                       </span>
                     </p>
                   </div>
-
-                  {statusBadge(o[1])}
+                  <div className="text-right">
+                    {statusBadge(o[1].toLowerCase())}
+                  </div>
                 </div>
               </div>
             ))}

@@ -155,7 +155,8 @@ CREATE TABLE notification (
   type VARCHAR2(50),
   message VARCHAR2(255),
   is_read NUMBER DEFAULT 0,
-  sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_notif_user FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
 -- QUEUE TOKEN
@@ -177,6 +178,23 @@ CREATE TABLE feedbacks (
     status VARCHAR2(20) DEFAULT 'Pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_feedback_user
+    FOREIGN KEY(user_id)
+    REFERENCES users(user_id)
+);
+
+CREATE TABLE refunds (
+    refund_id NUMBER PRIMARY KEY,
+    order_id NUMBER NOT NULL,
+    user_id NUMBER NOT NULL,
+    amount NUMBER(10,2),
+    reason VARCHAR2(255),
+    status VARCHAR2(20) DEFAULT 'Pending',
+    requested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    processed_at TIMESTAMP,
+    CONSTRAINT fk_refund_order
+    FOREIGN KEY(order_id)
+    REFERENCES order_table(order_id),
+    CONSTRAINT fk_refund_user
     FOREIGN KEY(user_id)
     REFERENCES users(user_id)
 );
