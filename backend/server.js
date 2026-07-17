@@ -1,6 +1,7 @@
 const express = require("express");
 const oracledb = require("oracledb");
 const cors = require("cors");
+require("dotenv").config();
 
 const authRoutes = require("./routes/authRoutes");
 const menuRoutes = require("./routes/menuRoutes");
@@ -9,6 +10,7 @@ const orderRoutes = require("./routes/orderRoutes");
 const queueRoutes = require("./routes/queueRoutes");
 const reservationRoutes = require("./routes/reservationRoutes");
 const tableRoutes = require("./routes/tableRoutes");
+const paymentRoutes = require("./routes/paymentRoutes");
 
 const app = express();
 app.use(cors());
@@ -63,6 +65,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/queue", queueRoutes);
 app.use("/api/reservation", reservationRoutes);
 app.use("/api/tables", tableRoutes);
+app.use("/api/payment", paymentRoutes);
 
 app.listen(4000, () => {
   console.log("Backend running on http://localhost:4000");

@@ -93,6 +93,35 @@ export default function OrdersPage() {
                 {/* DIVIDER */}
                 <div className="my-3 border-t" />
 
+                {o[3] === "Unpaid" && (
+                  <button
+                    onClick={async () => {
+                      const res = await fetch(
+                        `http://localhost:4000/api/payment/create/${o[0]}`,
+                        {
+                          method: "POST",
+                        },
+                      );
+
+                      const data = await res.json();
+
+                      if (data.success) {
+                        window.location.href = data.url;
+                      }
+                    }}
+                    className="
+bg-orange-500
+text-white
+px-4
+py-2
+rounded-lg
+text-sm
+"
+                  >
+                    Pay Now
+                  </button>
+                )}
+
                 {/* BOTTOM ROW */}
                 <div className="flex justify-between items-center">
                   <div>

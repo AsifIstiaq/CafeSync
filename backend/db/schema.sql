@@ -77,12 +77,15 @@ CREATE TABLE reservation (
 -- PAYMENT
 CREATE TABLE payment (
   payment_id NUMBER PRIMARY KEY,
-  order_id NUMBER,
-  method VARCHAR2(30),
-  amount NUMBER(10,2),
-  transaction_id VARCHAR2(100),
-  status VARCHAR2(20),
-  paid_at TIMESTAMP
+  order_id NUMBER NOT NULL,
+  method VARCHAR2(30) DEFAULT 'SSLCommerz',
+  amount NUMBER(10,2) NOT NULL,
+  transaction_id VARCHAR2(100) UNIQUE,
+  status VARCHAR2(20) DEFAULT 'Pending',
+  paid_at TIMESTAMP,
+  CONSTRAINT fk_payment_order
+  FOREIGN KEY (order_id)
+  REFERENCES order_table(order_id)
 );
 
 -- SUBSCRIPTION
