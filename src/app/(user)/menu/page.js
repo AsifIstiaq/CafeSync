@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
+import Image from "next/image";
 
 export default function MenuPage() {
   const [items, setItems] = useState([]);
@@ -126,29 +127,23 @@ export default function MenuPage() {
                 hover:-translate-y-2
                 "
               >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <div
+                {/* IMAGE SECTION */}
+                {item[6] && (
+                  <div className="relative h-44">
+                    <Image
+                      src={item[6]}
+                      alt={item[1]}
+                      fill
                       className="
-                    h-14
-                    w-14
-                    rounded-2xl
-                    bg-orange-100
-                    flex
-                    items-center
-                    justify-center
-                    text-3xl
-                    mb-4
-                    "
-                    >
-                      🍛
-                    </div>
-
-                    <h3 className="text-xl font-bold text-gray-800">
-                      {item[1]}
-                    </h3>
+      object-cover
+      group-hover:scale-105
+      transition
+      "
+                    />
                   </div>
+                )}
 
+                <div className="p-4">
                   <span
                     className={`
                     px-3 py-1 rounded-full text-xs font-semibold

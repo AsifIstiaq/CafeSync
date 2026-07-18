@@ -15,16 +15,17 @@ async function getUserMembership(req, res) {
     const result = await conn.execute(
       `
 SELECT
-
-card_id,
-tier,
-points,
-issue_date,
-expiry_date
-
+    card_id,
+    tier,
+    points,
+    issue_date,
+    expiry_date,
+    CASE
+        WHEN expiry_date < SYSDATE THEN 'Expired'
+        ELSE 'Active'
+    END AS status
 FROM membership_card
-
-WHERE user_id=:user_id
+WHERE user_id = :user_id
 
 `,
       {

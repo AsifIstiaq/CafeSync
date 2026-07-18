@@ -12,6 +12,14 @@ export default function AdminMembership() {
     expiry_date: "",
   });
 
+  const [editCard, setEditCard] = useState(null);
+
+  const [editForm, setEditForm] = useState({
+    tier: "",
+    points: "",
+    expiry_date: "",
+  });
+
   useEffect(() => {
     loadCards();
   }, []);
@@ -56,13 +64,19 @@ export default function AdminMembership() {
     }
   }
 
-  async function updateStatus(card) {
-    const tier = prompt("Enter Tier", card[3]);
+  function updateStatus(card) {
+    setEditCard(card[0]);
 
-    if (!tier) return;
+    setEditForm({
+      tier: card[3],
+      points: card[4],
+      expiry_date: new Date(card[6]).toISOString().substring(0, 10),
+    });
+  }
 
+  async function saveEdit() {
     await fetch(
-      `http://localhost:4000/api/membership/admin/update/${card[0]}`,
+      `http://localhost:4000/api/membership/admin/update/${editCard}`,
       {
         method: "PUT",
 
@@ -70,15 +84,11 @@ export default function AdminMembership() {
           "Content-Type": "application/json",
         },
 
-        body: JSON.stringify({
-          tier,
-
-          points: card[4],
-
-          expiry_date: new Date(card[6]).toISOString().substring(0, 10),
-        }),
+        body: JSON.stringify(editForm),
       },
     );
+
+    setEditCard(null);
 
     loadCards();
   }
@@ -257,6 +267,67 @@ export default function AdminMembership() {
             Create Membership
           </button>
         </div>
+
+        {editCard && (
+          <div className="bg-white border rounded-2xl p-6 mb-8 shadow">
+            <h2 className="text-xl font-bold mb-5">Edit Membership</h2>
+
+            <div className="grid md:grid-cols-3 gap-4">
+              <select
+                className="border rounded-xl px-4 py-3"
+                value={editForm.tier}
+                onChange={(e) =>
+                  setEditForm({
+                    ...editForm,
+                    tier: e.target.value,
+                  })
+                }
+              >
+                <option>Silver</option>
+                <option>Gold</option>
+                <option>Platinum</option>
+              </select>
+
+              <input
+                className="border rounded-xl px-4 py-3"
+                type="number"
+                value={editForm.points}
+                onChange={(e) =>
+                  setEditForm({
+                    ...editForm,
+                    points: e.target.value,
+                  })
+                }
+              />
+
+              <input
+                className="border rounded-xl px-4 py-3"
+                type="date"
+                value={editForm.expiry_date}
+                onChange={(e) =>
+                  setEditForm({
+                    ...editForm,
+                    expiry_date: e.target.value,
+                  })
+                }
+              />
+            </div>
+
+            <button
+              onClick={saveEdit}
+              className="
+mt-5
+bg-green-600
+text-white
+px-6
+py-3
+rounded-xl
+"
+            >
+              Save Changes
+            </button>
+          </div>
+        )}
 
         {/* TABLE */}
         <div

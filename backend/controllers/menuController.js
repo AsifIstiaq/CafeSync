@@ -30,7 +30,8 @@ async function addItem(req, res) {
   let conn;
 
   try {
-    const { name, description, price, category, image_url } = req.body;
+    const { name, description, price, category, availability, image_url } =
+      req.body;
 
     conn = await getConnection();
 
@@ -42,9 +43,34 @@ async function addItem(req, res) {
 
     await conn.execute(
       `INSERT INTO menu_item
-       (item_id, name, description, price, category, image_url)
-       VALUES (:item_id, :name, :description, :price, :category, :image_url)`,
-      { item_id: nextItemId, name, description, price, category, image_url },
+      (
+        item_id,
+        name,
+        description,
+        price,
+        category,
+        availability,
+        image_url
+      )
+      VALUES
+      (
+        :item_id,
+        :name,
+        :description,
+        :price,
+        :category,
+        :availability,
+        :image_url
+      )`,
+      {
+        item_id: nextItemId,
+        name,
+        description,
+        price,
+        category,
+        availability: availability ?? 1,
+        image_url,
+      },
       { autoCommit: true },
     );
 

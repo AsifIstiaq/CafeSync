@@ -34,7 +34,7 @@ export default function LoginPage() {
 
     try {
       const res = await fetch(
-        "http://localhost:4000/api/auth/login",
+        "http://localhost:4000/api/auth/user-login",
 
         {
           method: "POST",
@@ -64,26 +64,10 @@ export default function LoginPage() {
           },
         );
 
-        switch (data.user.role.toLowerCase()) {
-          case "admin":
-            router.push("/admin/menu");
-
-            break;
-
-          case "staff":
-            router.push("/staff/dashboard");
-
-            break;
-
-          case "customer":
-            router.push("/menu");
-
-            break;
-
-          default:
-            setMessage("Unknown user role");
-
-            break;
+        if (data.user.role.toLowerCase() === "customer") {
+          router.push("/menu");
+        } else {
+          setMessage("Only customer accounts can login here");
         }
       } else {
         setMessage(data.message);

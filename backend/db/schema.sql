@@ -58,7 +58,9 @@ CREATE TABLE order_item (
   unit_price NUMBER(10,2),
   notes VARCHAR2(255),
   CONSTRAINT fk_order FOREIGN KEY (order_id) REFERENCES order_table(order_id),
-  CONSTRAINT fk_item FOREIGN KEY (item_id) REFERENCES menu_item(item_id)
+  CONSTRAINT fk_item FOREIGN KEY (item_id)
+REFERENCES menu_item(item_id)
+ON DELETE CASCADE
 );
 
 -- RESERVATION
@@ -121,9 +123,10 @@ CREATE TABLE review (
     CONSTRAINT fk_review_user
     FOREIGN KEY(user_id)
     REFERENCES users(user_id),
-    CONSTRAINT fk_review_item
-    FOREIGN KEY(item_id)
-    REFERENCES menu_item(item_id)
+CONSTRAINT fk_review_item
+FOREIGN KEY (item_id)
+REFERENCES menu_item(item_id)
+ON DELETE CASCADE
 );
 
 -- COUPON
@@ -198,3 +201,65 @@ CREATE TABLE refunds (
     FOREIGN KEY(user_id)
     REFERENCES users(user_id)
 );
+
+-- When an order becomes Paid, automatically add membership points.
+CREATE OR REPLACE TRIGGER trg_membership_points
+AFTER UPDATE OF payment_status ON order_table
+FOR EACH ROW
+DECLARE
+    CURSOR c_member IS
+        SELECT card_id, points
+        FROM membership_card
+        WHERE user_id = :NEW.user_id;
+
+    v_card_id membership_card.card_id%TYPE;
+    v_points membership_card.points%TYPE;
+BEGIN
+
+    IF LOWER(:NEW.payment_status)='paid'
+       AND LOWER(:OLD.payment_status)!='paid'
+    THEN
+
+        OPEN c_member;
+
+        FETCH c_member
+        INTO v_card_id, v_points;
+
+        IF c_member%FOUND THEN
+
+            UPDATE membership_card
+            SET points =
+                points + FLOOR(:NEW.total_amount/10)
+            WHERE card_id=v_card_id;
+
+        END IF;
+
+        CLOSE c_member;
+
+    END IF;
+
+END;
+/
+
+-- Whenever a membership card is updated, if the expiry date is in the past, automatically set its tier to "Expired".
+CREATE OR REPLACE TRIGGER trg_membership_expiry
+BEFORE UPDATE ON membership_card
+FOR EACH ROW
+DECLARE
+    CURSOR c_date IS
+        SELECT SYSDATE
+        FROM dual;
+
+    v_today DATE;
+BEGIN
+
+    OPEN c_date;
+    FETCH c_date INTO v_today;
+    CLOSE c_date;
+
+    IF :NEW.expiry_date < v_today THEN
+        :NEW.tier := 'Expired';
+    END IF;
+
+END;
+/

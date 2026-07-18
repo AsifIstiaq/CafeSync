@@ -12,6 +12,7 @@ export default function AdminMenu() {
     description: "",
     price: "",
     category: "",
+    availability: 1,
     image_url: "",
   });
 
@@ -82,6 +83,7 @@ export default function AdminMenu() {
       description: item[2] || "",
       price: item[3] || "",
       category: item[4] || "",
+      availability: item[5] ?? 1,
       image_url: item[6] || "",
     });
   };
@@ -102,6 +104,7 @@ export default function AdminMenu() {
       description: "",
       price: "",
       category: "",
+      availability: 1,
       image_url: "",
     });
   };
@@ -212,11 +215,28 @@ py-3
 "
               />
 
+              <select
+                name="availability"
+                value={form.availability}
+                onChange={handleChange}
+                className="
+w-full
+border
+rounded-xl
+px-4
+py-3
+"
+              >
+                <option value={1}>Available</option>
+
+                <option value={0}>Unavailable</option>
+              </select>
+
               <input
                 name="image_url"
                 value={form.image_url}
                 onChange={handleChange}
-                placeholder="Image URL"
+                placeholder="/images/burger.jpg"
                 className="
 w-full
 rounded-xl
@@ -287,7 +307,7 @@ transition
 group
 "
                 >
-                  {/* {item[6] && (
+                  {item[6] && (
                     <div className="relative h-44">
                       <Image
                         src={item[6]}
@@ -300,7 +320,7 @@ transition
 "
                       />
                     </div>
-                  )} */}
+                  )}
 
                   <div className="p-5">
                     <div className="flex justify-between">

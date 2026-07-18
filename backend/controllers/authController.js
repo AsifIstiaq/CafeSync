@@ -112,6 +112,85 @@ async function login(req, res) {
   }
 }
 
+async function userLogin(req, res) {
+  let conn;
+
+  try {
+    const { email, password } = req.body;
+
+    conn = await getConnection();
+
+    const result = await conn.execute(
+      `
+      SELECT 
+        u.user_id,
+        u.name,
+        u.email,
+        u.password_hash,
+        r.role_name
+      FROM users u
+      JOIN roles r 
+      ON u.role_id = r.role_id
+      WHERE u.email = :email
+      AND LOWER(r.role_name) = 'customer'
+      `,
+      {
+        email,
+      },
+    );
+
+    if (!result.rows || result.rows.length === 0) {
+      return res.json({
+        success: false,
+        message: "Customer account not found",
+      });
+    }
+
+    const user = result.rows[0];
+
+    const isMatch = await bcrypt.compare(password, user[3]);
+
+    if (!isMatch) {
+      return res.json({
+        success: false,
+        message: "Invalid password",
+      });
+    }
+
+    const token = jwt.sign(
+      {
+        userId: user[0],
+        email: user[2],
+        role: user[4],
+      },
+      "SECRET_KEY",
+      {
+        expiresIn: "1d",
+      },
+    );
+
+    res.json({
+      success: true,
+
+      token,
+
+      user: {
+        id: user[0],
+        name: user[1],
+        email: user[2],
+        role: user[4],
+      },
+    });
+  } catch (err) {
+    res.json({
+      success: false,
+      message: err.message,
+    });
+  } finally {
+    if (conn) await conn.close();
+  }
+}
+
 async function logout(req, res) {
   res.json({
     success: true,
@@ -119,4 +198,4 @@ async function logout(req, res) {
   });
 }
 
-module.exports = { register, login, logout };
+module.exports = { register, login, userLogin, logout };

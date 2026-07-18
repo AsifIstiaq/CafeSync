@@ -229,7 +229,7 @@ export default function MembershipPage() {
                   <div className="text-right">
                     <p className="text-sm text-white/80">Status</p>
 
-                    <p className="font-bold">Active ✓</p>
+                    <p className="font-bold">{card[5]}</p>
                   </div>
                 </div>
               </div>

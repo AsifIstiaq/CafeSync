@@ -156,8 +156,6 @@ async function updatePaymentStatus(req, res) {
 
     conn = await getConnection();
 
-    conn = await getConnection();
-
     await conn.execute(
       `UPDATE order_table 
        SET payment_status = :payment_status
