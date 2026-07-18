@@ -93,11 +93,11 @@ export default function AdminDashboard() {
     );
   }
 
-  const pending = orders.filter((o) => o[2] === "pending").length;
+  const pending = orders.filter((o) => o[3] === "pending").length;
 
-  const preparing = orders.filter((o) => o[2] === "preparing").length;
+  const preparing = orders.filter((o) => o[3] === "preparing").length;
 
-  const ready = orders.filter((o) => o[2] === "ready").length;
+  const ready = orders.filter((o) => o[3] === "ready").length;
 
   return (
     <div className="min-h-screen bg-slate-50 p-5 md:p-8">
@@ -216,14 +216,14 @@ export default function AdminDashboard() {
                     <td className="p-4">
                       <div className="flex items-center gap-2">
                         <Utensils size={16} />
-                        {o[5]} × {o[6]}
+                        {o[6]} × {o[7]}
                       </div>
                     </td>
 
-                    <td className="p-4">{o[1]}</td>
+                    <td className="p-4">{o[2]}</td>
 
                     <td className="p-4">
-                      <StatusBadge status={o[2]} />
+                      <StatusBadge status={o[3]} />
                     </td>
 
                     <td className="p-4">
@@ -234,13 +234,13 @@ export default function AdminDashboard() {
           rounded-full
           text-xs
           ${
-            o[4] === "paid"
+            o[5] === "paid"
               ? "bg-green-100 text-green-700"
               : "bg-red-100 text-red-700"
           }
           `}
                       >
-                        {o[4]}
+                        {o[5]}
                       </span>
 
                       <div className="flex gap-2 mt-3">
@@ -275,14 +275,14 @@ export default function AdminDashboard() {
                     </td>
 
                     <td className="p-4">
-                      {o[8] ? (
+                      {o[9] ? (
                         <span
                           className="
           font-bold
           text-green-600
           "
                         >
-                          T{String(o[8]).padStart(3, "0")}
+                          T{String(o[9]).padStart(3, "0")}
                         </span>
                       ) : (
                         <button

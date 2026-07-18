@@ -13,15 +13,10 @@ async function salesReport(req, res) {
     const result = await conn.execute(
       `
 SELECT
-
-COUNT(order_id),
-
-NVL(SUM(total_amount),0)
-
-
+    COUNT(order_id),
+    NVL(SUM(total_amount),0)
 FROM order_table
-
-WHERE payment_status='Paid'
+WHERE LOWER(payment_status) = 'paid'
 
 `,
     );

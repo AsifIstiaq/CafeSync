@@ -8,24 +8,35 @@ async function getAllOrders(req, res) {
     conn = await getConnection();
 
     const result = await conn.execute(
-      `SELECT 
+      `
+SELECT
     o.order_id,
     o.user_id,
+    u.name AS customer_name,
     o.status,
     o.total_amount,
     o.payment_status,
-    m.name,
+    m.name AS food_name,
     oi.quantity,
     oi.notes,
     q.token_number
+
 FROM order_table o
+
+LEFT JOIN users u
+ON o.user_id = u.user_id
+
 LEFT JOIN order_item oi
-  ON o.order_id = oi.order_id
+ON o.order_id = oi.order_id
+
 LEFT JOIN menu_item m
-  ON oi.item_id = m.item_id
+ON oi.item_id = m.item_id
+
 LEFT JOIN queue_token q
-  ON o.order_id = q.order_id
-ORDER BY o.order_id DESC`,
+ON o.order_id = q.order_id
+
+ORDER BY o.order_id DESC
+`,
     );
 
     res.json({

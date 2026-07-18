@@ -65,6 +65,10 @@ export default function AdminNavbar() {
       name: "Tables",
       path: "/admin/tables",
     },
+    {
+      name: "Feedback",
+      path: "/admin/feedback",
+    },
   ];
 
   return (
