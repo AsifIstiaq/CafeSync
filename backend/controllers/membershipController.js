@@ -112,56 +112,80 @@ ORDER BY m.card_id DESC
 // ADMIN - CREATE MEMBERSHIP CARD
 // ==========================================
 
+// ==========================================
+// ADMIN - CREATE MEMBERSHIP CARD
+// ==========================================
+
 async function createMembership(req, res) {
   let conn;
 
   try {
-    const {
-      user_id,
-
-      tier,
-
-      points,
-
-      expiry_date,
-    } = req.body;
+    const { phone, tier, points, expiry_date } = req.body;
 
     conn = await getConnection();
 
-    const idResult = await conn.execute(
+    const userResult = await conn.execute(
       `
-SELECT NVL(MAX(card_id),0)+1
-FROM membership_card
-`,
+      SELECT user_id
+      FROM users
+      WHERE phone = :phone
+      `,
+      { phone },
     );
+
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No user found with this phone number.",
+      });
+    }
+
+    const user_id = userResult.rows[0][0];
+
+    const existingCard = await conn.execute(
+      `
+      SELECT card_id
+      FROM membership_card
+      WHERE user_id = :user_id
+      `,
+      { user_id },
+    );
+
+    if (existingCard.rows.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "This user already has a membership card.",
+      });
+    }
+
+    const idResult = await conn.execute(`
+      SELECT NVL(MAX(card_id),0)+1
+      FROM membership_card
+    `);
 
     const card_id = idResult.rows[0][0];
 
     await conn.execute(
       `
-INSERT INTO membership_card
-
-(
-card_id,
-user_id,
-tier,
-points,
-issue_date,
-expiry_date
-)
-
-VALUES
-
-(
-:card_id,
-:user_id,
-:tier,
-:points,
-SYSDATE,
-TO_DATE(:expiry_date,'YYYY-MM-DD')
-)
-
-`,
+      INSERT INTO membership_card
+      (
+        card_id,
+        user_id,
+        tier,
+        points,
+        issue_date,
+        expiry_date
+      )
+      VALUES
+      (
+        :card_id,
+        :user_id,
+        :tier,
+        :points,
+        SYSDATE,
+        TO_DATE(:expiry_date,'YYYY-MM-DD')
+      )
+      `,
       {
         card_id,
         user_id,
@@ -169,7 +193,6 @@ TO_DATE(:expiry_date,'YYYY-MM-DD')
         points,
         expiry_date,
       },
-
       {
         autoCommit: true,
       },
@@ -177,13 +200,11 @@ TO_DATE(:expiry_date,'YYYY-MM-DD')
 
     res.json({
       success: true,
-
-      message: "Membership card created",
+      message: "Membership card created successfully.",
     });
   } catch (err) {
     res.status(500).json({
       success: false,
-
       message: err.message,
     });
   } finally {

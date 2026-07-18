@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import Cookies from "js-cookie";
 
 export default function ReviewPage() {
   const params = useParams();
@@ -14,7 +15,8 @@ export default function ReviewPage() {
 
   const [comment, setComment] = useState("");
 
-  const user_id = 1;
+  const user = JSON.parse(Cookies.get("user") || "{}");
+  const user_id = user.id;
 
   useEffect(() => {
     fetchReviews();

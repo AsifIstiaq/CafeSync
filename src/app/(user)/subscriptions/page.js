@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 
 export default function SubscriptionPage() {
-  const user_id = 1;
+  const user = JSON.parse(Cookies.get("user") || "{}");
+  const user_id = user.id;
 
   const [plans, setPlans] = useState([]);
   const [subscriptions, setSubscriptions] = useState([]);

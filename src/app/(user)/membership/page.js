@@ -1,9 +1,11 @@
 "use client";
+import Cookies from "js-cookie";
 
 import { useEffect, useState } from "react";
 
 export default function MembershipPage() {
-  const user_id = 1;
+  const user = JSON.parse(Cookies.get("user") || "{}");
+  const user_id = user.id;
 
   const [card, setCard] = useState(null);
 

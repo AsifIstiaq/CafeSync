@@ -2,6 +2,7 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState } from "react";
+import Cookies from "js-cookie";
 
 const API = "http://localhost:4000/api/reservation";
 
@@ -11,8 +12,8 @@ export default function ReservationPage() {
 
   const table_id = searchParams.get("table");
 
-  // Replace with logged in user later
-  const user_id = 1;
+  const user = JSON.parse(Cookies.get("user") || "{}");
+  const user_id = user.id;
 
   const [form, setForm] = useState({
     party_size: "",

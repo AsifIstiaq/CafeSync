@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
-  const user_id = 1;
+  const user = JSON.parse(Cookies.get("user") || "{}");
+  const user_id = user.id;
 
   useEffect(() => {
     fetchOrders();
@@ -331,7 +333,10 @@ export default function OrdersPage() {
                         const data = await res.json();
 
                         if (data.success) {
-                          window.location.href = data.url;
+                          alert("Payment successful.");
+                          fetchOrders();
+                        } else {
+                          alert(data.message);
                         }
                       }}
                       className="

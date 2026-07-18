@@ -177,7 +177,7 @@ SELECT
 
 r.refund_id,
 r.order_id,
-u.username,
+u.name,
 r.amount,
 r.reason,
 r.status,

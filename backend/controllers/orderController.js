@@ -12,46 +12,46 @@ async function placeOrder(req, res) {
 
     // APPLY COUPON
 
-    if (coupon_id) {
-      const couponResult = await conn.execute(
-        `
-SELECT
-discount_type,
-value
+    //     if (coupon_id) {
+    //       const couponResult = await conn.execute(
+    //         `
+    // SELECT
+    // discount_type,
+    // value
 
-FROM coupon
+    // FROM coupon
 
-WHERE coupon_id=:coupon_id
-`,
-        {
-          coupon_id,
-        },
-      );
+    // WHERE coupon_id=:coupon_id
+    // `,
+    //         {
+    //           coupon_id,
+    //         },
+    //       );
 
-      if (couponResult.rows.length) {
-        const coupon = couponResult.rows[0];
+    //       if (couponResult.rows.length) {
+    //         const coupon = couponResult.rows[0];
 
-        if (coupon[0] == "PERCENT") {
-          finalAmount = total_amount - (total_amount * coupon[1]) / 100;
-        } else {
-          finalAmount = total_amount - coupon[1];
-        }
+    //         if (coupon[0] == "PERCENT") {
+    //           finalAmount = total_amount - (total_amount * coupon[1]) / 100;
+    //         } else {
+    //           finalAmount = total_amount - coupon[1];
+    //         }
 
-        await conn.execute(
-          `
-UPDATE coupon
+    //         await conn.execute(
+    //           `
+    // UPDATE coupon
 
-SET used_count =
-used_count+1
+    // SET used_count =
+    // used_count+1
 
-WHERE coupon_id=:coupon_id
-`,
-          {
-            coupon_id,
-          },
-        );
-      }
-    }
+    // WHERE coupon_id=:coupon_id
+    // `,
+    //           {
+    //             coupon_id,
+    //           },
+    //         );
+    //       }
+    //     }
 
     // CREATE ORDER ID
 

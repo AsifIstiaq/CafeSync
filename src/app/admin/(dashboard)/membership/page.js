@@ -6,7 +6,7 @@ export default function AdminMembership() {
   const [cards, setCards] = useState([]);
 
   const [form, setForm] = useState({
-    user_id: "",
+    phone: "",
     tier: "Silver",
     points: 0,
     expiry_date: "",
@@ -29,7 +29,6 @@ export default function AdminMembership() {
   async function createCard() {
     const res = await fetch(
       "http://localhost:4000/api/membership/admin/create",
-
       {
         method: "POST",
 
@@ -47,6 +46,13 @@ export default function AdminMembership() {
       alert("Membership created");
 
       loadCards();
+
+      setForm({
+        phone: "",
+        tier: "Silver",
+        points: 0,
+        expiry_date: "",
+      });
     }
   }
 
@@ -57,7 +63,6 @@ export default function AdminMembership() {
 
     await fetch(
       `http://localhost:4000/api/membership/admin/update/${card[0]}`,
-
       {
         method: "PUT",
 
@@ -81,153 +86,304 @@ export default function AdminMembership() {
   async function deleteCard(id) {
     if (!confirm("Delete membership?")) return;
 
-    await fetch(
-      `http://localhost:4000/api/membership/admin/delete/${id}`,
-
-      {
-        method: "DELETE",
-      },
-    );
+    await fetch(`http://localhost:4000/api/membership/admin/delete/${id}`, {
+      method: "DELETE",
+    });
 
     loadCards();
   }
 
+  function tierStyle(tier) {
+    if (tier === "Gold") {
+      return "bg-yellow-100 text-yellow-700 border-yellow-300";
+    }
+
+    if (tier === "Platinum") {
+      return "bg-purple-100 text-purple-700 border-purple-300";
+    }
+
+    return "bg-gray-100 text-gray-700 border-gray-300";
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-5 md:p-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">Membership Card Management</h1>
+        {/* HEADER */}
+        <div className="mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
+            Membership Management
+          </h1>
 
-        <div className="bg-white p-5 rounded-xl shadow border mb-8">
-          <h2 className="font-bold mb-4">Create Membership Card</h2>
+          <p className="text-gray-500 mt-2">
+            Create, manage and monitor customer membership cards.
+          </p>
+        </div>
 
-          <div className="grid md:grid-cols-4 gap-3">
-            <input
-              placeholder="User ID"
-              className="border p-2 rounded"
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  user_id: e.target.value,
-                })
-              }
-            />
+        {/* CREATE CARD */}
+        <div className="bg-white rounded-2xl shadow-sm border p-6 mb-8">
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="text-xl font-bold text-gray-800">
+              Create Membership Card
+            </h2>
 
-            <select
-              className="border p-2 rounded"
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  tier: e.target.value,
-                })
-              }
-            >
-              <option>Silver</option>
+            <div className="bg-orange-100 text-orange-600 px-4 py-2 rounded-full text-sm font-medium">
+              New Card
+            </div>
+          </div>
 
-              <option>Gold</option>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+              <label className="text-sm text-gray-600">Phone Number</label>
+              <input
+                value={form.phone}
+                placeholder="Enter customer phone number"
+                className="
+                mt-1
+                w-full
+                border
+                rounded-xl
+                px-4
+                py-3
+                outline-none
+                focus:ring-2
+              focus:ring-orange-400
+                "
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    phone: e.target.value,
+                  })
+                }
+              />
+            </div>
 
-              <option>Platinum</option>
-            </select>
+            <div>
+              <label className="text-sm text-gray-600">Membership Tier</label>
 
-            <input
-              placeholder="Points"
-              className="border p-2 rounded"
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  points: e.target.value,
-                })
-              }
-            />
+              <select
+                value={form.tier}
+                className="
+                mt-1
+                w-full
+                border
+                rounded-xl
+                px-4
+                py-3
+                outline-none
+                focus:ring-2
+                focus:ring-orange-400
+                "
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    tier: e.target.value,
+                  })
+                }
+              >
+                <option>Silver</option>
+                <option>Gold</option>
+                <option>Platinum</option>
+              </select>
+            </div>
 
-            <input
-              type="date"
-              className="border p-2 rounded"
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  expiry_date: e.target.value,
-                })
-              }
-            />
+            <div>
+              <label className="text-sm text-gray-600">Reward Points</label>
+
+              <input
+                value={form.points}
+                placeholder="Points"
+                className="
+                mt-1
+                w-full
+                border
+                rounded-xl
+                px-4
+                py-3
+                outline-none
+                focus:ring-2
+                focus:ring-orange-400
+                "
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    points: e.target.value,
+                  })
+                }
+              />
+            </div>
+
+            <div>
+              <label className="text-sm text-gray-600">Expiry Date</label>
+
+              <input
+                type="date"
+                value={form.expiry_date}
+                className="
+                mt-1
+                w-full
+                border
+                rounded-xl
+                px-4
+                py-3
+                outline-none
+                focus:ring-2
+                focus:ring-orange-400
+                "
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    expiry_date: e.target.value,
+                  })
+                }
+              />
+            </div>
           </div>
 
           <button
             onClick={createCard}
             className="
-mt-4
-bg-orange-500
-text-white
-px-5
-py-2
-rounded
-"
+            mt-6
+            bg-orange-500
+            hover:bg-orange-600
+            text-white
+            px-8
+            py-3
+            rounded-xl
+            font-semibold
+            transition
+            shadow-sm
+            "
           >
-            Create
+            Create Membership
           </button>
         </div>
 
-        <div className="bg-white rounded-xl shadow border overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="p-3">ID</th>
+        {/* TABLE */}
+        <div
+          className="
+        bg-white
+        border
+        rounded-2xl
+        shadow-sm
+        overflow-hidden
+        "
+        >
+          <div className="px-6 py-5 border-b">
+            <h2 className="text-xl font-bold text-gray-800">
+              Customer Membership Cards
+            </h2>
+          </div>
 
-                <th className="p-3">Customer</th>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-100">
+                <tr className="text-left text-sm text-gray-600">
+                  <th className="px-6 py-4">ID</th>
 
-                <th className="p-3">Email</th>
+                  <th className="px-6 py-4">Customer</th>
 
-                <th className="p-3">Tier</th>
+                  <th className="px-6 py-4">Email</th>
 
-                <th className="p-3">Points</th>
+                  <th className="px-6 py-4">Tier</th>
 
-                <th className="p-3">Action</th>
-              </tr>
-            </thead>
+                  <th className="px-6 py-4">Points</th>
 
-            <tbody>
-              {cards.map((card) => (
-                <tr key={card[0]} className="border-t">
-                  <td className="p-3">{card[0]}</td>
-
-                  <td className="p-3">{card[1]}</td>
-
-                  <td className="p-3">{card[2]}</td>
-
-                  <td className="p-3">{card[3]}</td>
-
-                  <td className="p-3">{card[4]}</td>
-
-                  <td className="p-3 space-x-2">
-                    <button
-                      onClick={() => updateStatus(card)}
-                      className="
-bg-blue-500
-text-white
-px-3
-py-1
-rounded
-"
-                    >
-                      Edit
-                    </button>
-
-                    <button
-                      onClick={() => deleteCard(card[0])}
-                      className="
-bg-red-500
-text-white
-px-3
-py-1
-rounded
-"
-                    >
-                      Delete
-                    </button>
-                  </td>
+                  <th className="px-6 py-4">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+
+              <tbody>
+                {cards.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan="6"
+                      className="
+                      text-center
+                      py-10
+                      text-gray-500
+                      "
+                    >
+                      No membership cards found
+                    </td>
+                  </tr>
+                ) : (
+                  cards.map((card) => (
+                    <tr
+                      key={card[0]}
+                      className="
+                      border-t
+                      hover:bg-gray-50
+                      transition
+                      "
+                    >
+                      <td className="px-6 py-4 font-medium">#{card[0]}</td>
+
+                      <td className="px-6 py-4">{card[1]}</td>
+
+                      <td className="px-6 py-4 text-gray-600">{card[2]}</td>
+
+                      <td className="px-6 py-4">
+                        <span
+                          className={`
+                          inline-flex
+                          px-3
+                          py-1
+                          rounded-full
+                          text-sm
+                          font-semibold
+                          border
+                          ${tierStyle(card[3])}
+                          `}
+                        >
+                          {card[3]}
+                        </span>
+                      </td>
+
+                      <td className="px-6 py-4 font-semibold">{card[4]}</td>
+
+                      <td className="px-6 py-4">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => updateStatus(card)}
+                            className="
+                            bg-blue-500
+                            hover:bg-blue-600
+                            text-white
+                            px-4
+                            py-2
+                            rounded-lg
+                            text-sm
+                            font-medium
+                            transition
+                            "
+                          >
+                            Edit
+                          </button>
+
+                          <button
+                            onClick={() => deleteCard(card[0])}
+                            className="
+                            bg-red-500
+                            hover:bg-red-600
+                            text-white
+                            px-4
+                            py-2
+                            rounded-lg
+                            text-sm
+                            font-medium
+                            transition
+                            "
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

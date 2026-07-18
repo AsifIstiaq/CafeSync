@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState([]);
 
-  const user_id = 1;
+  const user = JSON.parse(Cookies.get("user") || "{}");
+  const user_id = user.id;
 
   async function loadNotifications() {
     const res = await fetch(

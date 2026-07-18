@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import ReservationBadge from "@/components/ReservationBadge";
+import Cookies from "js-cookie";
 
 const API = "http://localhost:4000/api/reservation";
 
@@ -9,7 +10,8 @@ export default function MyReservations() {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const user_id = 1;
+  const user = JSON.parse(Cookies.get("user") || "{}");
+  const user_id = user.id;
 
   useEffect(() => {
     fetchReservations();

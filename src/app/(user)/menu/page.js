@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 
 export default function MenuPage() {
   const [items, setItems] = useState([]);
@@ -8,6 +9,9 @@ export default function MenuPage() {
   const [coupon, setCoupon] = useState("");
   const [couponId, setCouponId] = useState(null);
   const [discount, setDiscount] = useState(0);
+  const user = JSON.parse(Cookies.get("user") || "{}");
+  const user_id = user.id;
+  const cartTotal = cart.reduce((sum, item) => sum + item[2] * item[3], 0);
 
   useEffect(() => {
     fetch("http://localhost:4000/api/menu/items")
@@ -66,14 +70,10 @@ export default function MenuPage() {
   }
 
   async function placeOrder() {
-    const user_id = 1;
-
-    const total_amount = cart.reduce((sum, item) => sum + item[2] * item[3], 0);
-
     const payload = {
       user_id,
       items: cart,
-      total_amount: total_amount - discount,
+      total_amount: cartTotal - discount,
       coupon_id: couponId,
     };
 
@@ -94,8 +94,6 @@ export default function MenuPage() {
       alert(data.message);
     }
   }
-
-  const cartTotal = cart.reduce((sum, item) => sum + item[2] * item[3], 0);
 
   return (
     <div className="min-h-screen">

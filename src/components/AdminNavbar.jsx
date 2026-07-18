@@ -48,6 +48,11 @@ export default function AdminNavbar() {
     },
 
     {
+      name: "Membership",
+      path: "/admin/membership",
+    },
+
+    {
       name: "Subscriptions",
       path: "/admin/subscriptions",
     },

@@ -1,8 +1,12 @@
 "use client";
+import Cookies from "js-cookie";
 
 import { useState } from "react";
 
 export default function FeedbackPage() {
+  const user = JSON.parse(Cookies.get("user") || "{}");
+  const user_id = user.id;
+
   const [form, setForm] = useState({
     subject: "",
     message: "",
@@ -18,7 +22,7 @@ export default function FeedbackPage() {
       },
 
       body: JSON.stringify({
-        user_id: 1,
+        user_id: user_id,
         ...form,
       }),
     });
